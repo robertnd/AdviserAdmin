@@ -1,0 +1,31 @@
+<div class="detail">
+    <div class="form-container">
+      <div class="form-row">
+        <div class="overview" id="formTitle">
+          <h1 class="functional__heading"></h1>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="overview">
+          <h1 class="overview__subheading">Please select:</h1>
+        </div>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  
+        <div class="form-row">
+          <div class="radio-input-plan">
+            <input type="radio" name="actionselector" formControlName="actionselector" value="Failed Logins"
+              id="failedLoginsOpt" />
+            <label for="failedLoginsOpt">Failed Logins</label>
+          </div>
+        </div>
+  
+        <div class="input-group">
+          <button class="ombutton lefted with-icon" type="submit">
+            select
+            <img src="../assets/img/arrow-right-light.svg" alt="" />
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
