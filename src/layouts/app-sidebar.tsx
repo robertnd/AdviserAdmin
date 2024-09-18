@@ -11,18 +11,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SIDEBAR_MENU_ITEMS } from "@/constants/dashboard";
+import OMLogo from "@/assets/logos/om-logo.png";
 
 const AppSidebar: React.FC = () => {
   return (
-    <div className="hidden fixed z-[30] inset-y-0 border-r border-[#282828] w-64 flex-shrink-0 md:block">
+    <div className="hidden fixed z-[30] inset-y-0 border-r border-[#282828] w-36 flex-shrink-0 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center text-white px-4 lg:h-[60px] lg:px-6">
           <Link
             to="/dashboard"
             className="flex items-center gap-2 text-white font-semibold"
           >
-            {/* <Package2 className="h-6 w-6" /> */}
-            <span className="not-sr-only text-white">Advisor-Admin</span>
+            <img className="h-10 w-10" src={OMLogo}/>
+            <span className="not-sr-only text-white text-sm">Adviser Portal</span>
           </Link>
           {/* <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
             <Bell className="h-4 w-4" />
@@ -34,10 +35,12 @@ const AppSidebar: React.FC = () => {
             {SIDEBAR_MENU_ITEMS.map((link) => (
               <Link
                 to={link.href}
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 h-20 text-black transition-all hover:text-primary"
               >
-                {<link.Icon className="h-4 w-4" />}
-                {link.label}
+                <div className="flex flex-col items-center justify-center w-full">
+                <div>{<link.Icon className="h-6 w-6" />}</div>
+                <div className="mt-2">{link.label}</div>
+                </div>
               </Link>
             ))}
           </nav>

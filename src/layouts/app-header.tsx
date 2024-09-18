@@ -30,7 +30,7 @@ const AppHeader: React.FC = () => {
               className="flex items-center gap-2 text-lg text-white font-semibold"
             >
               {/* <Package2 className="h-6 w-6" /> */}
-              <span className="not-sr-only text-white">Advisor-Admin</span>
+              <span className="not-sr-only text-white">Adviser Portal</span>
             </Link>
             {SIDEBAR_MENU_ITEMS.map((link) => (
               <Link
