@@ -8,39 +8,51 @@ export const SIDEBAR_MENU_ITEMS: {
   Icon: React.FC<Props>;
 }[] = [
   {
-    key: "workbench",
-    label: "Workbench",
-    href: "/workbench",
+    key: "dashboard",
+    label: "Dashboard",
+    href: "/dashboard",
     Icon: LayoutGrid,
   },
   {
-    key: "leads",
-    label: "Leads",
-    href: "/leads",
-    Icon: MessageSquare,
-  },
-  {
-    key: "customer",
-    label: "Customer",
-    href: "/customer",
+    key: "admins",
+    label: "Admins",
+    href: "/admins",
     Icon: Users,
   },
-  {
-    key: "campaign",
-    label: "Campaign",
-    href: "/campaign",
-    Icon: Calendar,
-  },
-  {
-    key: "myTeam",
-    label: "My Team",
-    href: "/my-team",
-    Icon: Users2,
-  },
-  {
-    key: "servicing",
-    label: "Servicing",
-    href: "/servicing",
-    Icon: Wrench,
-  },
+  // {
+  //   key: "workbench",
+  //   label: "Workbench",
+  //   href: "/workbench",
+  //   Icon: LayoutGrid,
+  // },
+  // {
+  //   key: "leads",
+  //   label: "Leads",
+  //   href: "/leads",
+  //   Icon: MessageSquare,
+  // },
+  // {
+  //   key: "customer",
+  //   label: "Customer",
+  //   href: "/customer",
+  //   Icon: Users,
+  // },
+  // {
+  //   key: "campaign",
+  //   label: "Campaign",
+  //   href: "/campaign",
+  //   Icon: Calendar,
+  // },
+  // {
+  //   key: "myTeam",
+  //   label: "My Team",
+  //   href: "/my-team",
+  //   Icon: Users2,
+  // },
+  // {
+  //   key: "servicing",
+  //   label: "Servicing",
+  //   href: "/servicing",
+  //   Icon: Wrench,
+  // },
 ];

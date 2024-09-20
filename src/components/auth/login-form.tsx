@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +9,58 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useState } from "react";
+import { successToast } from "@/lib/utils";
+import { Icons } from "../ui/icons";
+import { loginUser } from "@/api-calls";
+import { UserLoginObj } from "@/types";
 
-export function LoginForm() {
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  setToken: (userToken: string) => void
+}
+
+const schema = yup.object({
+  email: yup.string().email().required(),
+  password: yup.string().min(8).required(),
+});
+type IFormInput = yup.InferType<typeof schema>;
+
+export function LoginForm({ setToken }: UserAuthFormProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>({ resolver: yupResolver(schema) });
+
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    try {
+      setIsLoading(true);
+      const userData: UserLoginObj = {
+        email: data?.email,
+        password: data?.password,
+      };
+      // alert(JSON.stringify(userData))
+      const res = await loginUser(userData);
+      if (res?.status === 200) {
+        // console.log(res?.data)
+        setToken(res?.data?.data?.token)
+        successToast("Login Successful");
+        navigate("/dashboard")
+      }
+    } catch (err) {
+      // const error = err as IError | AxiosError;
+      // errorToast(error?.message);
+      // setErrorMessage(error?.message);
+      // setRegError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -20,6 +70,7 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -28,7 +79,11 @@ export function LoginForm() {
               type="email"
               placeholder="m@example.com"
               required
-            />
+              {...register("email", { required: true })}
+              />
+              {errors.email && (
+                <span className="text-criticalRed">{errors.email?.message}</span>
+              )}
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
@@ -37,16 +92,23 @@ export function LoginForm() {
                 Forgot your password?
               </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required {...register("password", { required: true })}
+            />
+            {errors.password && (
+              <span className="text-criticalRed">
+                {errors.password?.message}
+              </span>
+            )}
           </div>
-          <Link to="/dashboard" className="">
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            Continue
           </Button>
-          </Link>
-          <Button variant="outline" className="w-full">
+          {/* <Button variant="outline" className="w-full">
             Login with Google
-          </Button>
+          </Button> */}
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
@@ -54,6 +116,7 @@ export function LoginForm() {
             Sign up
           </Link>
         </div>
+        </form>
       </CardContent>
     </Card>
   );

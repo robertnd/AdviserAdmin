@@ -23,7 +23,7 @@ const AppSidebar: React.FC = () => {
             className="flex items-center gap-2 text-white font-semibold"
           >
             <img className="h-10 w-10" src={OMLogo}/>
-            <span className="not-sr-only text-white text-sm">Adviser Portal</span>
+            <span className="not-sr-only text-white text-sm">Adviser Admin</span>
           </Link>
           {/* <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
             <Bell className="h-4 w-4" />
