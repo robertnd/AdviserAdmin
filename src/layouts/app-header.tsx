@@ -1,21 +1,17 @@
-import { CircleUser, Menu, Package2 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Bell, Menu, Search } from "lucide-react";
+import { Link } from "react-router-dom";
 // import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SIDEBAR_MENU_ITEMS } from "@/constants/dashboard";
+import { Input } from "@/components/ui/input";
+import OMLogo from "@/assets/logos/om-logo.png";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+
 
 const AppHeader: React.FC = () => {
   return (
-    <header className="flex z-[20] bg-[#282828] text-white h-14 items-center gap-4 w-full border-b px-4 flex-shrink-0 lg:h-[60px] lg:px-6">
+    <header className="flex z-[200] bg-[#282828] text-white h-14 items-center gap-4 w-full border-b p-8 flex-shrink-0 lg:h-[60px] lg:p-10">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -24,16 +20,17 @@ const AppHeader: React.FC = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col">
-          <nav className="grid gap-2 text-lg font-medium text-white">
+          <nav className="grid gap-2 text-2xl font-medium text-white">
             <Link
               to="#"
-              className="flex items-center gap-2 text-lg text-white font-semibold"
+              className="flex items-center gap-2 text-2xl text-white font-semibold"
             >
               {/* <Package2 className="h-6 w-6" /> */}
-              <span className="not-sr-only text-white">Adviser Admin</span>
+              <span className="not-sr-only text-white text-2xl">Adviser Admin</span>
             </Link>
             {SIDEBAR_MENU_ITEMS.map((link) => (
               <Link
+                key={link.key}
                 to={link.href}
                 className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
               >
@@ -73,17 +70,30 @@ const AppHeader: React.FC = () => {
           </div>
         </SheetContent>
       </Sheet>
-      <div className="w-full flex-1">
-        {/* <form>
-          <div className="relative">
+      <div className="w-full flex items-center justify-between gap-4 ">
+        <div className="flex items-center gap-2">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-2 text-white font-normal"
+          >
+            <img className="h-10 w-10" src={OMLogo}/>
+            <span className="not-sr-only text-white text-lg">Adviser Admin</span>
+          </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          <QuestionMarkCircledIcon className="h-5 w-5" />
+          <Bell className="h-5 w-5 mx-4" />
+          <form>
+            <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search ..."
-              className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+              className="w-full min-w-[300px] appearance-none rounded-full bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
             />
           </div>
-        </form> */}
+          </form>
+        </div>
       </div>
       {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>

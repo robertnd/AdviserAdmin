@@ -1,6 +1,5 @@
-import React from 'react';
-import MainWrapper from "@/layouts/wrappers/main-wrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import MainWrapper from "@/layouts/wrappers/main-wrapper";
 
 const getInitials = (name: string) => {
   return name

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios"
+import { AxiosError } from "axios"
 import axiosInstance from "./axios-interceptor"
 import { UserLoginObj } from "@/types"
 
@@ -8,11 +8,16 @@ export const loginUser = async (user: UserLoginObj) => {
     const data = JSON.stringify({
       user_id: user?.email,
       secret: user?.password,
+      email: user?.email,
+      password: user?.password,
       // grant_type: "password",
     })
+    
+    const endpoint = user.isRootAdmin ? "/admin/root-sign-in" : "/admin/admin-sign-in"
+    
     const config = {
       method: "post",
-      url: `${baseUrl}/admin/root-sign-in`,
+      url: `${baseUrl}${endpoint}`,
       data: data,
       headers: {
         "Content-Type": "application/json",

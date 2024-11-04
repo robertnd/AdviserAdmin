@@ -25,6 +25,7 @@ interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
 const schema = yup.object({
   email: yup.string().email().required(),
   password: yup.string().min(8).required(),
+  isRootAdmin: yup.boolean().required(),
 });
 type IFormInput = yup.InferType<typeof schema>;
 
@@ -35,35 +36,39 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IFormInput>({ resolver: yupResolver(schema) });
+  } = useForm<IFormInput>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      isRootAdmin: false,
+    },
+  });
+
+  // const isRootAdmin = watch("isRootAdmin");
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     try {
       setIsLoading(true);
       const userData: UserLoginObj = {
-        email: data?.email,
-        password: data?.password,
+        email: data.email,
+        password: data.password,
+        isRootAdmin: data.isRootAdmin,
       };
-      // alert(JSON.stringify(userData))
       const res = await loginUser(userData);
       if (res?.status === 200) {
-        // console.log(res?.data)
         setToken(res?.data?.data?.token)
         successToast("Login Successful");
         navigate("/dashboard")
       }
     } catch (err) {
-      // const error = err as IError | AxiosError;
-      // errorToast(error?.message);
-      // setErrorMessage(error?.message);
-      // setRegError(err);
+      // Error handling...
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <Card className="mx-auto max-w-sm">
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
           Enter your email below to login to your account
@@ -71,6 +76,15 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
       </CardHeader>
       <CardContent>
       <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex items-center mb-4 mt-4"> 
+          <input
+            type="checkbox"
+            id="rootAdmin"
+            className="mr-2"
+            {...register("isRootAdmin")}
+          /> 
+          <Label htmlFor="rootAdmin">Root Admin?</Label>
+        </div>
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -110,12 +124,13 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
             Login with Google
           </Button> */}
         </div>
-        <div className="mt-4 text-center text-sm">
+        {/*<div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
           <Link to="/register" className="underline">
             Sign up
           </Link>
         </div>
+        */}
         </form>
       </CardContent>
     </Card>

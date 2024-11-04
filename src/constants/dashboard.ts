@@ -1,7 +1,10 @@
 import { Props } from "@/components/icons/types";
-import { LayoutGrid, MessageSquare, Users, Calendar, Users2, Wrench } from "lucide-react";
 
-export const SIDEBAR_MENU_ITEMS: {
+
+import { CircleUser, FolderKanban, Grid3X3, Landmark, LayoutDashboard, UsersRound,  Calendar } from "lucide-react";
+
+
+  export const SIDEBAR_MENU_ITEMS: {
   key: string;
   label: string;
   href: string;
@@ -11,13 +14,53 @@ export const SIDEBAR_MENU_ITEMS: {
     key: "dashboard",
     label: "Dashboard",
     href: "/dashboard",
-    Icon: LayoutGrid,
+    Icon: LayoutDashboard,
+  },
+  {
+    key: "intermediaries",
+    label: "Advisers",
+    href: "/intermediaries",
+    Icon: UsersRound,
   },
   {
     key: "admins",
     label: "Admins",
     href: "/admins",
-    Icon: Users,
+    Icon: CircleUser,
+  },
+  // {
+  //   key: "departments",
+  //   label: "Departments",
+  //   href: "/departments",
+  //   Icon: Grid3X3,
+  // },
+  {
+    key: "products",
+    label: "Products",
+    href: "/products",
+
+    Icon: FolderKanban,
+
+  },
+  // {
+  //   key: "branches",
+  //   label: "Branches",
+  //   href: "/branches",
+
+  //   Icon: Landmark,
+
+  // },
+  // {
+  //   key: "notifications",
+  //   label: "Notifications",
+  //   href: "/notifications",
+  //   Icon: Bell,
+  // },
+  {
+    key: "events",
+    label: "Events",
+    href: "/events",
+    Icon: Calendar,
   },
   // {
   //   key: "workbench",

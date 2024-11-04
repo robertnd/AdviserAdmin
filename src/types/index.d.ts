@@ -5,4 +5,5 @@ export interface IAuthProps {
 export interface UserLoginObj {
     email: string
     password: string
+    isRootAdmin: boolean
 }

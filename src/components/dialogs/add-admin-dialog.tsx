@@ -8,14 +8,16 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { successToast } from "@/lib/utils";
-import { useCreateAdmin } from "@/services/mutations";
+import { useInviteAdmin } from "@/services/mutations";
+import { useAllPermissions } from "@/services/queries";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 
 export type AddShopMemberDialogProps = {
@@ -24,29 +26,39 @@ export type AddShopMemberDialogProps = {
 
 const schema = yup.object({
   email: yup.string().required("Email is required").email("Invalid email"),
-  password: yup.string().required("Password is required"),
+  permissions: yup.string().required("Permission is required"),
 });
 type IFormInput = yup.InferType<typeof schema>;
 
 export default function AddAdminDialog() {
   // const [isLoading, setIsLoading] = useState(false);
   const [openMemberDialog, setOpenMemberDialog] = useState(false);
-  const {mutateAsync: addAdminFn, isPending: isLoading} = useCreateAdmin()
+  // const {mutateAsync: addAdminFn, isPending: isLoading} = useCreateAdmin()
+  const {mutateAsync: inviteAdminFn, isPending: isLoading} = useInviteAdmin()
+  // const {data: roles} = useAllRoles()
+  const {data: permissions} = useAllPermissions()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    control
   } = useForm<IFormInput>({ resolver: yupResolver(schema) });
-
+  const selectedPermissions = watch("permissions")
+  
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const submitData: any = {
         email: data.email,
-        password: data.password,
+        user_id: data.email,
+        mobile_no: "",
+        password: Math.random().toString(36).slice(2, 10),
+        permissions: [parseInt(data.permissions)],
+        role: 3,
     };
-    addAdminFn(submitData).then(() => {
-      successToast(`${data.email} added successfully`);
+    inviteAdminFn(submitData).then(() => {
+      successToast(`${data.email} invited successfully`);
       reset();
       setOpenMemberDialog(false);
     })
@@ -56,11 +68,11 @@ export default function AddAdminDialog() {
   return (
     <Dialog open={openMemberDialog} onOpenChange={setOpenMemberDialog}>
       <DialogTrigger asChild>
-        <Button>Add Admin</Button>
+        <Button>Invite Admin</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Admin</DialogTitle>
+          <DialogTitle>Invite Admin</DialogTitle>
           <DialogDescription>
             Invite an admin to the platform.
           </DialogDescription>
@@ -81,18 +93,33 @@ export default function AddAdminDialog() {
           )}
         </div>
         <div className="space-y-2">
-          <Label className="" htmlFor="email">
-            Password*
+          <Label htmlFor="permissions">
+            Permissions
           </Label>
-          <Input
-            id="password"
-            placeholder="password"
-            type="password"
-            autoComplete="off"
-            {...register("password", { required: true })}
+          <Controller
+            name="permissions" 
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value} {...register("permissions", {required: true})}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select permission" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Permissions</SelectLabel>
+                    {permissions?.map((permission: any) => (
+                      <SelectItem key={permission.id} value={permission.id.toString()}>
+                        {permission.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
           />
-          {errors.password && (
-            <span className="text-criticalRed">{errors.password?.message}</span>
+          {errors.permissions && (
+            <span className="text-criticalRed">{errors.permissions?.message}</span>
           )}
         </div>
         <DialogFooter>
@@ -105,7 +132,7 @@ export default function AddAdminDialog() {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Save Admin
+            Invite Admin
           </Button>
         </DialogFooter>
       </DialogContent>

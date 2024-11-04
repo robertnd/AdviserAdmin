@@ -12,8 +12,8 @@ const MainWrapper: React.FC<MainWrapperProps> = ({ children, pageTitle="" }) => 
       <AppSidebar />
       <div className="flex flex-col flex-grow overflow-hidden">
         <AppHeader />
-        <div>{pageTitle || ""}</div>
-        <main className="flex-grow overflow-y-auto py-6 p-6 md:pr-6 md:pl-[170px]">
+        <div className="bg-[#F2F2F2] text-lg font-medium tracking-[0.15px] py-[28px] text-[#252133] md:pr-6 md:pl-[170px]">{pageTitle || ""}</div>
+        <main className="bg-[#f9f9f9] flex-grow overflow-y-auto py-6 p-6 md:pr-6 md:pl-[170px]">
           {children}
         </main>
       </div>

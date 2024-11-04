@@ -1,66 +1,83 @@
-import MainWrapper from "@/layouts/wrappers/main-wrapper";
-import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select } from '@/components/ui/select';
-import { Icons } from "@/components/ui/icons";
-import { useAllAdmins } from "@/services/queries";
 import AddAdminDialog from "@/components/dialogs/add-admin-dialog";
-interface Client {
-  id: string;
-  name: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-}
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/ui/icons";
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import MainWrapper from "@/layouts/wrappers/main-wrapper";
+import { useAllAdmins } from "@/services/queries";
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { Check, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function Admins() {
-  const [clients, setClients] = useState<Client[]>([
-    { id: '872411 7676 084', name: 'Sinazo Mzilikazi', contactNumber: '021 123 4534', email: 'sinazo@mzilikazi.co.za', address: '15 Reservoir Rd, St Francis, 6312 Eastern Cape' },
-    { id: '890312 5057 081', name: 'Ronald Coleman', contactNumber: '082 128 4139', email: 'ronald@coleman.co.za', address: '20 Blenheim Rd, Lynnwood Glen, 0081 Pretoria' },
-    { id: '872411 7676 084', name: 'Clive Francis', contactNumber: '072 123 4567', email: 'clive@Francis.co.za', address: '14 Angelica atropua St, Daveyton, Benoni, 1507 Gauteng' },
-    { id: '990719 6046 082', name: 'Charlie Parkinson', contactNumber: '072 123 4561', email: 'Charlie@parkinson.co.za', address: '80 Gately St, St Francis, 6312 Eastern Cape' },
-    { id: '911031 9693 081', name: 'Zanele Sisulu', contactNumber: '062 423 2563', email: 'zanele@sisulu.co.za', address: '10 Valley Dr, Belvedere Ext 1, Hillcrest, 3650 Kwazulu Natal' },
-    { id: '920209 9824 083', name: 'Yuji Pomade', contactNumber: '082 123 4668', email: 'Yuji@pomade.co.za', address: '1 Spin Street, Rosebank, Cape Town, 1507 Western Cape' },
-  ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const { data: allAdmins, isLoading, error, refetch } = useAllAdmins()
+  const { data: allAdmins } = useAllAdmins()
+  const [activeFilter, setActiveFilter] = useState("ALL");
+  const navigate = useNavigate();
 
-
-
-  const filteredClients = clients.filter(client =>
-    Object.values(client).some(value =>
-      value.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAdmins = allAdmins?.filter(admin =>
+    Object.values(admin).some(value =>
+      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  );
+  ) || [];
 
-  const indexOfLastClient = currentPage * rowsPerPage;
-  const indexOfFirstClient = indexOfLastClient - rowsPerPage;
+  const indexOfLastAdmin = currentPage * rowsPerPage;
+  const indexOfFirstAdmin = indexOfLastAdmin - rowsPerPage;
+  const currentAdmins = filteredAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-  function formatDate(dateObject: Date){
-    return dateObject.getDate() + "-" + (dateObject.getMonth() + 1) + "-" + dateObject.getFullYear()  ;
-  }
+  const handleManageAdmin = (adminId: string) => {
+    navigate(`/admins/${adminId}`);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    // Implement filtering logic here
+  };
+
   return (
-    <MainWrapper>
-      <div className="space-y-4">
-        <div className="flex justify-between items-center bg-gray-100 p-4">
-          <h2 className="text-2xl font-bold">Admins</h2>
-          <div className="hidden items-center space-x-2 sm:flex">
-            <span className="text-gray-500">Search</span>
+    <MainWrapper pageTitle="Admins">
+      <div className="">
+        <div className="py-[48px] flex flex-col items-center gap-2 ">
+          <p className="text-sm font-medium text-[#58595B] mb-2 leading-3 tracking-[1.83px]">FILTER BY STATUS:</p>
+          <div className="flex space-x-2">
+            {["ALL", "ACTIVE", "PENDING"].map((filter) => (
+              <Button
+                key={filter}
+                variant={activeFilter === filter ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleFilterChange(filter)}
+                className={`rounded-full text-[12px] font-medium leading-3 tracking-[0.4px] ${
+                  activeFilter === filter ? "bg-green-600 text-white" : "bg-white text-gray-700"
+                }`}
+              >
+                {filter}
+                {activeFilter === filter && (
+                  <div className="flex items-center justify-center ml-2 h-6 w-6 rounded-full bg-white">
+                    <Check className="mr-1 h-4 w-4 flex items-center justify-center text-green-600 ml-1" />
+                  </div>
+                )}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-between items-center bg-[#DCDDDE] p-4">
+          <h2 className="text-2xl font-bold"></h2>
+          <div className="flex items-center space-x-2">
             <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                type="text"
+                type="search"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-64"
+                className="w-full min-w-[300px] appearance-none rounded-full bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
               />
-              <Icons.Search className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             </div>
             <AddAdminDialog />
           </div>
@@ -68,24 +85,34 @@ export function Admins() {
         <div className="w-full">
           <Table className="w-full table-fixed">
             <TableHeader>
-              <TableRow className="bg-gray-100 border-b">
-                <TableHead className="font-semibold text-left py-3 px-4 w-1/5">ID</TableHead>
-                <TableHead className="font-semibold text-left py-3 px-4 w-1/6">Email</TableHead>
-                <TableHead className="font-semibold text-left py-3 px-4 w-1/5">Status</TableHead>
-                <TableHead className="font-semibold text-left py-3 px-4 w-1/3">Created At</TableHead>
+              <TableRow className="bg-[#F2F2F2] text-[#282828]">
+                <TableHead className="font-medium text-left leading-[18px] tracking-[0.1px] py-3 px-4 w-[25%]">ID</TableHead>
+                <TableHead className="font-medium text-left leading-[18px] tracking-[0.1px] py-3 px-4 w-[25%]">Email</TableHead>
+                <TableHead className="font-medium text-left leading-[18px] tracking-[0.1px] py-3 px-4 w-[25%]">Status</TableHead>
+                <TableHead className="font-medium text-left leading-[18px] tracking-[0.1px] py-3 px-4 w-[25%]">Created At</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {allAdmins && allAdmins.map((client, index) => (
-                <TableRow key={client.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <TableCell className="py-4 px-4 truncate">
-                    {client.id}
+              {currentAdmins.map((admin) => (
+                <TableRow 
+                  key={admin.id} 
+                  className="cursor-pointer"
+                  onClick={() => handleManageAdmin(admin.id)}
+                >
+                  <TableCell className="py-5 px-5 truncate bg-white">{admin.id}</TableCell>
+                  <TableCell className="py-5 px-5 truncate">
+                    <a href={`mailto:${admin.email}`} className="text-blue-600 hover:underline">{admin.email}</a>
                   </TableCell>
-                  <TableCell className="py-4 px-4 truncate">
-                    <a href={`mailto:${client.email}`} className="text-blue-600 hover:underline">{client.email}</a>
+                  <TableCell className="py-5 px-5 truncate bg-white">
+                    <span className={`px-2 py-1 rounded-full text-sm ${
+                      admin.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {admin.status}
+                    </span>
                   </TableCell>
-                  <TableCell className="py-4 px-4 truncate">{client.status}</TableCell>
-                  <TableCell className="py-4 px-4 truncate">{formatDate(new Date(client.create_date))}</TableCell>
+                  <TableCell className="py-5 px-5 truncate">
+                    {format(new Date(admin.create_date), 'MMM d, yyyy')}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -100,12 +127,12 @@ export function Admins() {
               onValueChange={(value) => setRowsPerPage(Number(value))}
             >
               <option value="10">10</option>
-              {/* <option value="20">20</option> */}
-              {/* <option value="50">50</option> */}
+              <option value="20">20</option>
+              <option value="50">50</option>
             </Select>
           </div>
           <div className="flex items-center space-x-4">
-            <span>{`${indexOfFirstClient + 1} - ${Math.min(indexOfLastClient, filteredClients.length)} of ${filteredClients.length}`}</span>
+            <span>{`${indexOfFirstAdmin + 1} - ${Math.min(indexOfLastAdmin, filteredAdmins.length)} of ${filteredAdmins.length}`}</span>
             <div className="flex space-x-1">
               <Button
                 variant="ghost"
@@ -119,7 +146,7 @@ export function Admins() {
                 variant="ghost"
                 size="sm"
                 onClick={() => paginate(currentPage + 1)}
-                disabled={indexOfLastClient >= filteredClients.length}
+                disabled={indexOfLastAdmin >= filteredAdmins.length}
               >
                 <Icons.ChevronRight className="h-5 w-5" />
               </Button>
