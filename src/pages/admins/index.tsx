@@ -1,39 +1,23 @@
 import AddAdminDialog from "@/components/dialogs/add-admin-dialog";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/icons";
 import { Input } from '@/components/ui/input';
-import { Select } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import MainWrapper from "@/layouts/wrappers/main-wrapper";
 import { useAllAdmins } from "@/services/queries";
-import { useState } from 'react';
 import { format } from 'date-fns';
 import { Check, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+// import { useNavigate } from "react-router-dom";
 
 export function Admins() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const { data: allAdmins } = useAllAdmins()
   const [activeFilter, setActiveFilter] = useState("ALL");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const filteredAdmins = allAdmins?.filter(admin =>
-    Object.values(admin).some(value =>
-      typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  ) || [];
-
-  const indexOfLastAdmin = currentPage * rowsPerPage;
-  const indexOfFirstAdmin = indexOfLastAdmin - rowsPerPage;
-  const currentAdmins = filteredAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  const handleManageAdmin = (adminId: string) => {
-    navigate(`/admins/${adminId}`);
-  };
+  // const handleManageAdmin = (adminId: string) => {
+  //   navigate(`/admins/${adminId}`);
+  // };
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
@@ -41,7 +25,7 @@ export function Admins() {
   };
 
   return (
-    <MainWrapper pageTitle="Admins">
+    <MainWrapper pageTitle="Users">
       <div className="">
         <div className="py-[48px] flex flex-col items-center gap-2 ">
           <p className="text-sm font-medium text-[#58595B] mb-2 leading-3 tracking-[1.83px]">FILTER BY STATUS:</p>
@@ -93,11 +77,11 @@ export function Admins() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentAdmins.map((admin) => (
+              {allAdmins && allAdmins.map((admin) => (
                 <TableRow 
                   key={admin.id} 
-                  className="cursor-pointer"
-                  onClick={() => handleManageAdmin(admin.id)}
+                  // className="cursor-pointer"
+                  // onClick={() => handleManageAdmin(admin.id)}
                 >
                   <TableCell className="py-5 px-5 truncate bg-white">{admin.id}</TableCell>
                   <TableCell className="py-5 px-5 truncate">
@@ -117,41 +101,6 @@ export function Admins() {
               ))}
             </TableBody>
           </Table>
-        </div>
-
-        <div className="flex justify-between items-center mt-4 px-4">
-          <div className="flex items-center space-x-2">
-            <span>Rows per page</span>
-            <Select
-              value={rowsPerPage.toString()}
-              onValueChange={(value) => setRowsPerPage(Number(value))}
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </Select>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span>{`${indexOfFirstAdmin + 1} - ${Math.min(indexOfLastAdmin, filteredAdmins.length)} of ${filteredAdmins.length}`}</span>
-            <div className="flex space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <Icons.ChevronLeft className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => paginate(currentPage + 1)}
-                disabled={indexOfLastAdmin >= filteredAdmins.length}
-              >
-                <Icons.ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
     </MainWrapper>

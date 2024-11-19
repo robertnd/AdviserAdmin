@@ -1,5 +1,5 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { fetchAllAdmins, fetchAllAdvisors, getAdvisorById, fetchAllEvents, getEventById, fetchApplicantFiles, fetchFileContent, fetchAllRoles, fetchAllPermissions } from "./api";
+import { fetchAllAdmins, fetchAllAdvisors, getAdvisorById, fetchAllEvents, getEventById, fetchApplicantFiles, fetchFileContent, fetchAllRoles, fetchAllPermissions, fetchAllProductCategories, fetchProductCategory, fetchProductsByCategory, fetchAdvisorReview, fetchProductCategoryAdmins, fetchAdminProductCategories, fetchAdviserApprovedProducts } from "./api";
 
 
 export const useAllAdmins = (): UseQueryResult<any[], Error> => {
@@ -80,5 +80,68 @@ export const useAllAdmins = (): UseQueryResult<any[], Error> => {
       queryFn: () => fetchAllPermissions(),
       refetchOnWindowFocus: false,
       enabled: true,
+    });
+  };
+
+  export const useAllProductCategories = (): UseQueryResult<any[], Error> => {
+    return useQuery({
+      queryKey: ["all-product-categories"],
+      queryFn: () => fetchAllProductCategories(),
+      refetchOnWindowFocus: false,
+      enabled: true,
+    });
+  };
+
+  export const useProductCategory = (categoryId: string): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: ["product-category", categoryId],
+      queryFn: () => fetchProductCategory(categoryId),
+      refetchOnWindowFocus: false,
+      enabled: !!categoryId,
+    });
+  };
+
+  export const useProductsByCategory = (categoryId: string): UseQueryResult<any[], Error> => {
+    return useQuery({
+      queryKey: ["products-by-category", categoryId],
+      queryFn: () => fetchProductsByCategory(categoryId),
+      refetchOnWindowFocus: false,
+      enabled: !!categoryId,
+    });
+  };
+
+  export const useAdviserReview = (userId: string): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: ["adviser-review", userId],
+      queryFn: () => fetchAdvisorReview(userId),
+      refetchOnWindowFocus: false,
+      enabled: !!userId,
+    });
+  };
+
+  export const useProductCategoryAdmins = (categoryId: string): UseQueryResult<any[], Error> => {
+    return useQuery({
+      queryKey: ["product-category-admins", categoryId],
+      queryFn: () => fetchProductCategoryAdmins(categoryId),
+      refetchOnWindowFocus: false,
+      enabled: !!categoryId,
+    });
+  };
+
+  export const useAdminProductCategories = (userId: string): UseQueryResult<any[], Error> => {
+    return useQuery({
+      queryKey: ["admin-product-categories", userId],
+      queryFn: () => fetchAdminProductCategories(),
+      refetchOnWindowFocus: false,
+      enabled: !!userId,
+    });
+  };
+
+  export const getAdviserApprovedProducts = (userId: string): UseQueryResult<any[], Error> => {
+    return useQuery({
+      queryKey: ["adviser-approved-products", userId],
+      queryFn: () => fetchAdviserApprovedProducts(userId),
+      refetchOnWindowFocus: false,
+      enabled: !!userId,
     });
   };

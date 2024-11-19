@@ -1,80 +1,148 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import MainWrapper from "@/layouts/wrappers/main-wrapper";
 import { useAllEvents } from '@/services/queries';
-import { ChevronUp, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
-
+import { format } from "date-fns";
+import { 
+  ArrowRight, 
+  ChevronDown, 
+  Filter, 
+  LogIn, 
+  RefreshCw, 
+  Search, 
+  Settings, 
+  Shield 
+} from 'lucide-react';
+import { useState } from "react";
 
 export function Events() {
   const { data: events } = useAllEvents();
-    
-  const getInitials = (name: string) => {
-    return name.split(' ').map(word => word[0]).join('').toUpperCase();
-  };
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const getIconColor = (iconType: string) => {
-    switch (iconType) {
-      case 'Login': return 'bg-red-500';
-      case 'Approval': return 'bg-yellow-500'
-      case 'System': return 'bg-green-500';
-      case 'Announcement': return 'bg-blue-500';
-      case 'Security': return 'bg-purple-500';
-      default: return 'bg-gray-500';
+  const getEventIcon = (eventType: string) => {
+    switch (eventType.toLowerCase()) {
+      case 'sign in':
+        return <LogIn className="h-5 w-5" />;
+      case 'security':
+        return <Shield className="h-5 w-5" />;
+      case 'system':
+        return <Settings className="h-5 w-5" />;
+      default:
+        return <ArrowRight className="h-5 w-5" />;
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'success':
+        return 'bg-green-100 text-green-800';
+      case 'error':
+        return 'bg-red-100 text-red-800';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const groupEventsByDate = (events: any[]) => {
+    return events?.reduce((groups: any, event) => {
+      const date = format(new Date(event.create_date), 'yyyy-MM-dd');
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(event);
+      return groups;
+    }, {}) || {};
+  };
+
+  const groupedEvents = groupEventsByDate(events!);
+
   return (
     <MainWrapper>
-      <h1 className="text-2xl font-bold mb-4">Events</h1>
-      <div className="bg-gray-100 p-2 flex justify-between items-center mb-4">
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="icon"><ChevronLeft className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" className="rotate-45">⟳</Button>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">System Events</h1>
+            <p className="text-sm text-gray-500 mt-1">Track and monitor system activities</p>
+          </div>
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={() => window.location.reload()}
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
         </div>
-        <div className="flex items-center space-x-2">
-          <span>1</span>
-          <span>-</span>
-          <span>5</span>
-          <Button variant="ghost" size="icon"><ChevronRight className="h-4 w-4" /></Button>
+
+        {/* Filters */}
+        <div className="flex gap-4 items-center bg-gray-50 p-4 rounded-lg">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Input
+              type="search"
+              placeholder="Search events..."
+              className="pl-9"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            Filter
+          </Button>
         </div>
-      </div>
-      <div className="bg-white shadow-sm">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-sm font-semibold">TODAY, 22 AUGUST</h2>
-          <ChevronUp className="h-5 w-5 text-gray-500" />
-        </div>
-        <div>
-          {events?.map((event) => (
-            <div key={event.event_id} className="flex items-start p-4 border-b">
-              <div className={`flex-shrink-0 mr-4 w-10 h-10 rounded-full ${getIconColor(event.user_id)} flex items-center justify-center text-white font-bold`}>
-                {getInitials(event.user_id)}
+
+        {/* Event Timeline */}
+        <div className="space-y-6">
+          {Object.entries(groupedEvents).map(([date, dateEvents]: [string, any]) => (
+            <div key={date} className="bg-white rounded-lg shadow-sm border">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-sm font-semibold">
+                  {format(new Date(date), 'EEEE, dd MMMM yyyy')}
+                </h2>
+                <ChevronDown className="h-5 w-5 text-gray-500" />
               </div>
-              <div className="flex-grow">
-                <p className="text-xs font-semibold text-gray-500">EVENT TYPE: {event.event_type}</p>
-                <p className="text-sm mt-1">{event.user_id}</p>
-                {event.action && (
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="text-blue-600 hover:text-blue-800 p-0 mt-1 text-xs"
-                  >
-                    {event.action} →
-                  </Button>
-                )}
-              </div>
-              <div className="flex flex-col items-end ml-2">
-                <MoreVertical className="h-5 w-5 text-gray-400 mb-2" />
-                <span className="text-xs text-gray-400">{event.status}</span>
+              <div className="divide-y">
+                {dateEvents.map((event: any) => (
+                  <div key={event.id} className="p-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start gap-4">
+                      <div className={`p-2 rounded-lg bg-gray-100`}>
+                        {getEventIcon(event.event_type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between">
+                          <div>
+                            <p className="font-medium">{event.user_id}</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {event.event_type} - {event.process}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                              ${getStatusColor(event.status)}`}>
+                              {event.status}
+                            </span>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {format(new Date(event.create_date), 'HH:mm:ss')}
+                            </p>
+                          </div>
+                        </div>
+                        {event.endpoint && (
+                          <p className="text-sm text-gray-500 mt-2">
+                            Endpoint: {event.endpoint}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
-      </div>
-      <div className="bg-white shadow-sm mt-4">
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-sm font-semibold">TUESDAY, 21 AUGUST</h2>
-          <ChevronUp className="h-5 w-5 text-gray-500" />
-        </div>
-        {/* Add more event logs for this date if needed */}
       </div>
     </MainWrapper>
   );

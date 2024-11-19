@@ -43,10 +43,9 @@ export default function AddAdminDialog() {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
     control
   } = useForm<IFormInput>({ resolver: yupResolver(schema) });
-  const selectedPermissions = watch("permissions")
+  // const selectedPermissions = watch("permissions")
   
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     const submitData: any = {

@@ -60,9 +60,9 @@ export const createAdmin = async ({email, password}: any) => {
     return data.data ?? {};
   };
 
-  export const updateAdvisorStatus = async (user_id: string, status: string): Promise<any> => {
-    const { data } = await axiosInstance.post(`${baseUrl}/admin/update-adviser-status`, { user_id, status });
-    return data ?? {};
+  export const updateAdvisorStatus = async (data: any): Promise<any> => {
+    const { data: response } = await axiosInstance.post(`${baseUrl}/admin/update-adviser-status`, data);
+    return response ?? {};
 
   };
   export const fetchAllEvents = async (): Promise<any[]> => {
@@ -92,4 +92,66 @@ export const createAdmin = async ({email, password}: any) => {
   export const fetchAllPermissions = async () => {
     const response = await axiosInstance.get(`${baseUrl}/permissions/permissions`);
     return response.data.data.permissions;
+  };
+
+  export const createProductCategory = async (categoryData: any) => {
+    const response = await axiosInstance.post(`${baseUrl}/product-categories`, categoryData);
+    return response.data.data;
+  };
+
+  export const fetchAllProductCategories = async () => {
+    const response = await axiosInstance.get(`${baseUrl}/product-categories/`);
+    return response.data.data.categories;
+  };
+
+  export const fetchProductCategory = async (categoryId: string) => {
+    const response = await axiosInstance.get(`${baseUrl}/product-categories/${categoryId}`);
+    return response.data.data;
+  };
+
+  export const createProduct = async (productData: any) => {
+    productData.product_category_id = parseInt(productData.product_category_id);
+    const response = await axiosInstance.post(`${baseUrl}/products`, productData);
+    return response.data.data;
+  };
+
+  export const fetchProductsByCategory = async (categoryId: string) => {
+    const response = await axiosInstance.get(`${baseUrl}/products/category/${categoryId}`);
+    return response.data.data;
+  };
+
+  export const updateAdvisorReview = async (data: any) => {
+    const response = await axiosInstance.put(`${baseUrl}/adviser-reviews/${data.review_id}`, data);
+    return response.data.data;
+  };
+
+  export const fetchAdvisorReview = async (userId: string) => {
+    const response = await axiosInstance.get(`${baseUrl}/adviser-reviews/adviser/${userId}`);
+    return response.data.data;
+  };
+
+  export const assignProductCategoryApprovalPermission = async (data: any) => {
+    const response = await axiosInstance.post(`${baseUrl}/admin/product-categories/assign`, data);
+    return response.data.data;
+  };
+
+  export const fetchProductCategoryAdmins = async (categoryId: string) => {
+    const response = await axiosInstance.get(`${baseUrl}/admin/product-categories/admins/${categoryId}`);
+    return response.data.data;
+  };
+
+  export const fetchAdminProductCategories = async () => {
+    const response = await axiosInstance.get(`${baseUrl}/admin/product-categories`);
+    return response.data.data.categories;
+  };
+
+  export const approveAdvisor = async (data: any) => {
+    const response = await axiosInstance.put(`${baseUrl}/adviser-reviews/approve/foo`, data);
+    return response.data.data;
+  };
+
+  export const fetchAdviserApprovedProducts = async (userId: string) => {
+    console.log(userId);
+    const response = await axiosInstance.get(`${baseUrl}/products/adviser/${userId}`);
+    return response.data.data;
   };

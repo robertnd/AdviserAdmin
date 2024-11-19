@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { errorToast, successToast } from "@/lib/utils";
-import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword } from "./api";
+import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword, createProductCategory, createProduct, updateAdvisorReview, assignProductCategoryApprovalPermission, approveAdvisor } from "./api";
 
 
 export const useCreateAdmin = () => {
@@ -67,7 +67,7 @@ export const useCreateAdmin = () => {
     const queryClient = useQueryClient();
     return useMutation({
       mutationKey: ["updateAdvisorStatus"],
-      mutationFn: (data: { user_id: string; status: string }) => updateAdvisorStatus(data.user_id, data.status),
+      mutationFn: (data: any) => updateAdvisorStatus(data),
       onSettled: async (_, error) => {
         if (error) {
           errorToast(error.message);
@@ -101,8 +101,101 @@ export const useCreateAdmin = () => {
       }
     });
   };
-  
 
-    
+  export const useCreateProductCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["createProductCategory"],
+      mutationFn: (categoryData: any) => createProductCategory(categoryData),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
+      }
+    });
+  };
+
+  export const useCreateProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["createProduct"],
+      mutationFn: (productData: any) => createProduct(productData),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-products"] });
+      }
+    });
+  };
+
+  export const useUpdateAdvisorReview = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["updateAdvisorReview"],
+      mutationFn: (data: any) => updateAdvisorReview(data),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-advisors"] });
+      }
+    });
+  };
+
+  export const useAssignProductCategoryApprovalPermission = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["assignProductCategoryApprovalPermission"],
+      mutationFn: (data: any) => assignProductCategoryApprovalPermission(data),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
+      }
+    });
+
+  };
+
+  export const useApproveAdvisor = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["approveAdvisor"],
+      mutationFn: (data: any) => approveAdvisor(data),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-advisors"] });
+      }
+    });
+  };
 
 

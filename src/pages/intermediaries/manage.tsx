@@ -1,24 +1,59 @@
+import { ApproveAdvisorDialog } from "@/components/dialogs/approve-advisor-dialog";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MainWrapper from "@/layouts/wrappers/main-wrapper";
-import { useAdvisorById, useGetApplicantFiles, useGetFileContent } from "@/services/queries";
-import { Check, FileIcon, EyeIcon, DownloadIcon } from "lucide-react";
+import { useApproveAdvisor, useUpdateAdvisorReview } from "@/services/mutations";
+import { useAdviserReview, useAdvisorById, useGetApplicantFiles, useGetFileContent } from "@/services/queries";
+import { Check, DownloadIcon, EyeIcon, FileIcon } from "lucide-react";
 import { useState } from 'react';
 import { useParams } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { useUpdateAdvisorStatus } from "@/services/mutations";
+import AdviserProductApprovalStatus from "./tabs/adviser-product-approval-status";
+import { ReviewAdvisorDialog } from "@/components/dialogs/review-adviser-dialog";
+import { AdviserReviewStatus } from "@/constants";
 
 
 export function ManageIntermediary() {
   const { intermediaryId } = useParams<{ intermediaryId: string }>();
   const { data: advisor, isLoading } = useAdvisorById(intermediaryId! as string);
-  const { mutate: updateAdvisorStatus } = useUpdateAdvisorStatus();
-
+  const { mutate: approveAdvisor } = useApproveAdvisor();
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const { mutate: updateAdvisorReviewFn } = useUpdateAdvisorReview();
+  const { data: adviserReview } = useAdviserReview(intermediaryId as string);
 
-  const handleApprove = () => {
-    updateAdvisorStatus({ user_id: advisor?.user_id, status: 'Active' });
+
+  const handleReview = ( requirements: string[], actionRequired: boolean, comments: string) => {
+    console.log('Selected requirements:', requirements);
+    const reviewStatus = !actionRequired ? AdviserReviewStatus.Approved : AdviserReviewStatus.Action_Required;
+    const requirementsMap = {
+      national_id: requirements.includes("ID Document"),
+      kra_pin: requirements.includes("KRA PIN"),
+      iprs: requirements.includes("IRA Number"),
+      copy_of_national_id: requirements.includes("Copy of ID"),
+      copy_of_kra_pin: requirements.includes("Copy of PIN")
+    };
+    updateAdvisorReviewFn({
+      review_id: adviserReview?.id,
+      user_id: advisor?.user_id,
+      adviser_id: advisor?.id,
+      status: reviewStatus,
+      comment: comments,
+      document_verification_status: JSON.stringify(requirementsMap)
+    });
+    setIsReviewDialogOpen(false);
+  };
+
+  const handleApprove = (selectedProducts: number[]) => {
+    console.log('Selected products:', selectedProducts);
+    approveAdvisor({ 
+      review_id: adviserReview?.id,
+      user_id: advisor?.user_id, 
+      adviser_id: advisor?.id,
+      status: AdviserReviewStatus.Approved,
+      product_ids: selectedProducts 
+    });
     setIsApproveDialogOpen(false);
   };
 
@@ -44,28 +79,47 @@ export function ManageIntermediary() {
             </span>
           </div>
           {advisor.intermediary_type === 'Applicant' && (
-            <Dialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  <Check className="h-4 w-4 mr-2" />
-                  Approve Intermediary
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Approve Intermediary</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to approve {advisor.names}? This action cannot be undone.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsApproveDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleApprove} className="bg-green-600 hover:bg-green-700 text-white">
-                    Confirm Approval
+            <>
+              <div className="space-x-2">
+                {/* {advisor.status === AdviserReviewStatus.Pending || advisor.status === AdviserReviewStatus.Action_Required && ( */}
+                <Button 
+                  onClick={() => setIsReviewDialogOpen(true)}
+                  variant="outline"
+                >
+                  <Check className="h-4 w-4 mr-2 text-green-600" />
+                  Review Advisor
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                {/* )} */}
+                <Button 
+                  onClick={() => setIsApproveDialogOpen(true)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Approve Advisor
+                  </Button>
+              </div>
+              
+              <ReviewAdvisorDialog
+                isOpen={isReviewDialogOpen}
+                onOpenChange={setIsReviewDialogOpen}
+                advisorName={advisor.names}
+                onSubmit={(requirements: string[], actionRequired: boolean, comments: string) => 
+                  handleReview(requirements, actionRequired, comments)}
+                documents={{
+                  hasIdDocument: Boolean(advisor.id_document),
+                  hasKraPin: Boolean(advisor.kra_pin),
+                  hasIraNumber: Boolean(advisor.ira_number),
+                  hasPinCopy: Boolean(advisor.pin_copy),
+                  hasIdCopy: Boolean(advisor.id_copy),
+                }}
+              />
+              <ApproveAdvisorDialog
+                isOpen={isApproveDialogOpen}
+                onOpenChange={setIsApproveDialogOpen}
+                advisorName={advisor.names}
+                onApprove={(selectedProducts: number[]) => handleApprove(selectedProducts)}
+              />
+            </>
           )}
         </div>
 
@@ -74,6 +128,7 @@ export function ManageIntermediary() {
             <TabsTrigger value="personal">Personal Information</TabsTrigger>
             <TabsTrigger value="business">Business Details</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="approval_status">Adviser Approved Products</TabsTrigger>
             <TabsTrigger value="activity">Activity Log</TabsTrigger>
           </TabsList>
           <TabsContent value="personal" className="mt-4">
@@ -108,6 +163,9 @@ export function ManageIntermediary() {
           </TabsContent>
           <TabsContent value="documents" className="mt-4">
             <DocumentsTab intermediaryId={intermediaryId!} />
+          </TabsContent>
+          <TabsContent value="approval_status" className="mt-4">
+            <AdviserProductApprovalStatus />
           </TabsContent>
           <TabsContent value="activity" className="mt-4">
             {/* Add activity log here */}

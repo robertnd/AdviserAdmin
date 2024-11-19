@@ -1,7 +1,7 @@
 import { Props } from "@/components/icons/types";
 
 
-import { CircleUser, FolderKanban, Grid3X3, Landmark, LayoutDashboard, UsersRound,  Calendar } from "lucide-react";
+import { CircleUser, FolderKanban, LayoutDashboard, UsersRound,  Calendar } from "lucide-react";
 
 
   export const SIDEBAR_MENU_ITEMS: {
@@ -23,9 +23,9 @@ import { CircleUser, FolderKanban, Grid3X3, Landmark, LayoutDashboard, UsersRoun
     Icon: UsersRound,
   },
   {
-    key: "admins",
-    label: "Admins",
-    href: "/admins",
+    key: "users",
+    label: "Users",
+    href: "/users",
     Icon: CircleUser,
   },
   // {
@@ -37,8 +37,7 @@ import { CircleUser, FolderKanban, Grid3X3, Landmark, LayoutDashboard, UsersRoun
   {
     key: "products",
     label: "Products",
-    href: "/products",
-
+    href: "/product-categories",
     Icon: FolderKanban,
 
   },
