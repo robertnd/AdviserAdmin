@@ -29,7 +29,7 @@ export function Intermediaries() {
   };
 
   return (
-    <MainWrapper pageTitle="Advisers">
+    <MainWrapper pageTitle="Advisors">
       <div className="">
       <div className="py-[48px] flex flex-col items-center gap-2 ">
           <p className="text-sm font-medium text-[#58595B] mb-2 leading-3 tracking-[1.83px]">FILTER BY STATUS:</p>

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MainWrapper from "@/layouts/wrappers/main-wrapper";
 import { useApproveAdvisor, useUpdateAdvisorReview } from "@/services/mutations";
 import { useAdviserReview, useAdvisorById, useGetApplicantFiles, useGetFileContent } from "@/services/queries";
-import { Check, DownloadIcon, EyeIcon, FileIcon } from "lucide-react";
+import { Check, DownloadIcon, EyeIcon, FileIcon, Loader2 } from "lucide-react";
 import { useState } from 'react';
 import { useParams } from "react-router-dom";
 import AdviserProductApprovalStatus from "./tabs/adviser-product-approval-status";
@@ -17,10 +17,10 @@ import { AdviserReviewStatus } from "@/constants";
 export function ManageIntermediary() {
   const { intermediaryId } = useParams<{ intermediaryId: string }>();
   const { data: advisor, isLoading } = useAdvisorById(intermediaryId! as string);
-  const { mutate: approveAdvisor } = useApproveAdvisor();
+  const { mutate: approveAdvisor, isPending: isApprovePending } = useApproveAdvisor();
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
-  const { mutate: updateAdvisorReviewFn } = useUpdateAdvisorReview();
+  const { mutate: updateAdvisorReviewFn, isPending: isReviewPending } = useUpdateAdvisorReview();
   const { data: adviserReview } = useAdviserReview(intermediaryId as string);
 
 
@@ -85,17 +85,19 @@ export function ManageIntermediary() {
                 <Button 
                   onClick={() => setIsReviewDialogOpen(true)}
                   variant="outline"
+                  disabled={adviserReview?.current_workflow_stage_id != 1 ||(adviserReview?.current_workflow_stage_id == 1 && adviserReview?.status == AdviserReviewStatus.Approved)}
                 >
-                  <Check className="h-4 w-4 mr-2 text-green-600" />
-                  Review Advisor
+                  {isReviewPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-green-600" />}
+                  Review Adviser
                   </Button>
                 {/* )} */}
                 <Button 
                   onClick={() => setIsApproveDialogOpen(true)}
                   className="bg-green-600 hover:bg-green-700 text-white"
+                  disabled={(adviserReview?.current_workflow_stage_id == 1 && adviserReview?.status == AdviserReviewStatus.Approved) || (adviserReview?.current_workflow_stage_id == 2 && adviserReview?.status == AdviserReviewStatus.Approved)}
                 >
-                  <Check className="h-4 w-4 mr-2" />
-                  Approve Advisor
+                  {isApprovePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-white" />}
+                  Approve Adviser
                   </Button>
               </div>
               

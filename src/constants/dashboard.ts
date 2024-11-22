@@ -18,7 +18,7 @@ import { CircleUser, FolderKanban, LayoutDashboard, UsersRound,  Calendar } from
   },
   {
     key: "intermediaries",
-    label: "Advisers",
+    label: "Advisors",
     href: "/intermediaries",
     Icon: UsersRound,
   },

@@ -135,7 +135,7 @@ export const useCreateAdmin = () => {
         errorToast(error.message);
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: ["all-products"] });
+        await queryClient.invalidateQueries({ queryKey: ["products-by-category"] });
       }
     });
   };
@@ -155,6 +155,7 @@ export const useCreateAdmin = () => {
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["all-advisors"] });
+        await queryClient.invalidateQueries({ queryKey: ["adviser-reviews"] });
       }
     });
   };
@@ -173,7 +174,7 @@ export const useCreateAdmin = () => {
         errorToast(error.message);
       },
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
+        await queryClient.invalidateQueries({ queryKey: ["product-category-admins"] });
       }
     });
 
@@ -194,6 +195,7 @@ export const useCreateAdmin = () => {
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["all-advisors"] });
+        await queryClient.invalidateQueries({ queryKey: ["adviser-reviews"] });
       }
     });
   };

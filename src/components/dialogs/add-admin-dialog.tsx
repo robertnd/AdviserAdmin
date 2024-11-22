@@ -54,7 +54,7 @@ export default function AddAdminDialog() {
         mobile_no: "",
         password: Math.random().toString(36).slice(2, 10),
         permissions: [parseInt(data.permissions)],
-        role: 3,
+        role: 2, //FIXME: change this to the role of the admin
     };
     inviteAdminFn(submitData).then(() => {
       successToast(`${data.email} invited successfully`);
@@ -67,7 +67,7 @@ export default function AddAdminDialog() {
   return (
     <Dialog open={openMemberDialog} onOpenChange={setOpenMemberDialog}>
       <DialogTrigger asChild>
-        <Button>Invite Admin</Button>
+        <Button>Invite User</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -131,7 +131,7 @@ export default function AddAdminDialog() {
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Invite Admin
+            Invite User
           </Button>
         </DialogFooter>
       </DialogContent>

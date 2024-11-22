@@ -13,7 +13,7 @@ export const useAllAdmins = (): UseQueryResult<any[], Error> => {
 
   export const useAllAdvisors = (): UseQueryResult<any[], Error> => {
     return useQuery({
-      queryKey: ["all-advsisors"],
+      queryKey: ["all-advisors"],
       queryFn: () => fetchAllAdvisors(),
       refetchOnWindowFocus: false,
       enabled: true,

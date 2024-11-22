@@ -76,7 +76,7 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
       </CardHeader>
       <CardContent>
       <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex items-center mb-4 mt-4"> 
+      {/* <div className="flex items-center mb-4 mt-4"> 
           <input
             type="checkbox"
             id="rootAdmin"
@@ -84,7 +84,7 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
             {...register("isRootAdmin")}
           /> 
           <Label htmlFor="rootAdmin">Root Admin?</Label>
-        </div>
+        </div> */}
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -102,9 +102,9 @@ export function LoginForm({ setToken }: UserAuthFormProps) {
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              <Link to="#" className="ml-auto inline-block text-sm underline">
+              {/* <Link to="#" className="ml-auto inline-block text-sm underline">
                 Forgot your password?
-              </Link>
+              </Link> */}
             </div>
             <Input id="password" type="password" required {...register("password", { required: true })}
             />
