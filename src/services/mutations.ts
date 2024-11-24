@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { errorToast, successToast } from "@/lib/utils";
-import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword, createProductCategory, createProduct, updateAdvisorReview, assignProductCategoryApprovalPermission, approveAdvisor, updateProductCategory, deleteProductCategory } from "./api";
+import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword, createProductCategory, createProduct, updateAdvisorReview, assignProductCategoryApprovalPermission, approveAdvisor, updateProductCategory, deleteProductCategory, updateAdvisorProducts, removeProductCategoryApprovalPermission } from "./api";
 
 
 export const useCreateAdmin = () => {
@@ -220,6 +220,26 @@ export const useCreateAdmin = () => {
 
   };
 
+  export const useRemoveProductCategoryApprovalPermission = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["removeProductCategoryApprovalPermission"],
+      mutationFn: (data: any) => removeProductCategoryApprovalPermission(data),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        successToast("Product category approval permission removed successfully");
+        await queryClient.invalidateQueries({ queryKey: ["product-category-admins"] });
+      }
+    });
+  };
+
   export const useApproveAdvisor = () => {
     const queryClient = useQueryClient();
     return useMutation({
@@ -236,6 +256,21 @@ export const useCreateAdmin = () => {
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["all-advisors"] });
         await queryClient.invalidateQueries({ queryKey: ["adviser-reviews"] });
+        await queryClient.invalidateQueries({ queryKey: ["adviser-approved-products"] });
+      }
+    });
+  };
+
+  export const useUpdateAdvisorProducts = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["updateAdvisorProducts"],
+      mutationFn: (data: any) => updateAdvisorProducts(data),
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["adviser-approved-products"] });
       }
     });
   };

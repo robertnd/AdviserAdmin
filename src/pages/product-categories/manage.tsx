@@ -11,8 +11,9 @@ import { useProductCategory, useProductCategoryAdmins, useProductsByCategory } f
 import { useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import AddPermissionDialog from "@/components/dialogs/add-permission-dialog";
-import { useAssignProductCategoryApprovalPermission } from "@/services/mutations";
+import { useAssignProductCategoryApprovalPermission, useRemoveProductCategoryApprovalPermission } from "@/services/mutations";
 import { ProductCategorySettings } from "@/components/tabs/product-category-settings";
+import { Loader2 } from "lucide-react";
 
 // interface Product {
 //   id: string;
@@ -42,6 +43,7 @@ export function ManageProductCategory() {
   const { data: category, isLoading: isCategoryLoading } = useProductCategory(categoryId!);
   const { data: products, isLoading: isProductsLoading } = useProductsByCategory(categoryId!);
   const { mutate: assignProductCategoryApprovalPermission } = useAssignProductCategoryApprovalPermission();
+  const { mutate: removeProductCategoryApprovalPermission, isPending: isRemovePending } = useRemoveProductCategoryApprovalPermission();
 
   // Filter products based on search term
   // const filteredProducts = products?.filter(product =>
@@ -52,6 +54,13 @@ export function ManageProductCategory() {
 
   const handleAddPermission = (adminId: string) => {
     assignProductCategoryApprovalPermission({
+      product_category_id: categoryId!,
+      admin_user_id: adminId.toString()
+    });
+  };
+
+  const handleRemovePermission = (adminId: string) => {
+    removeProductCategoryApprovalPermission({
       product_category_id: categoryId!,
       admin_user_id: adminId.toString()
     });
@@ -187,8 +196,8 @@ export function ManageProductCategory() {
                           {new Date(permission.create_date).toLocaleDateString()}
                         </TableCell>
                         <TableCell className={`py-5 px-5 ${index % 2 === 0 ? 'bg-white' : ''}`}>
-                          <Button variant="outline" size="sm" className="flex items-center text-red-600 hover:text-red-700">
-                            <Icons.Trash className="h-4 w-4 mr-1" />
+                          <Button variant="outline" size="sm" className="flex items-center text-red-600 hover:text-red-700" onClick={() => handleRemovePermission(permission.user_id)} disabled={isRemovePending}>
+                            {isRemovePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Icons.Trash className="h-4 w-4 mr-1" />}
                             Remove Access
                           </Button>
                         </TableCell>

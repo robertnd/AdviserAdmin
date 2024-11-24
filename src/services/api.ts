@@ -145,6 +145,11 @@ export const createAdmin = async ({email, password}: any) => {
     return response.data.data;
   };
 
+  export const removeProductCategoryApprovalPermission = async (data: any) => {
+    const response = await axiosInstance.post(`${baseUrl}/admin/product-categories/unassign`, data);
+    return response.data.data;
+  };
+
   export const fetchProductCategoryAdmins = async (categoryId: string) => {
     const response = await axiosInstance.get(`${baseUrl}/admin/product-categories/admins/${categoryId}`);
     return response.data.data;
@@ -163,5 +168,10 @@ export const createAdmin = async ({email, password}: any) => {
   export const fetchAdviserApprovedProducts = async (userId: string) => {
     console.log(userId);
     const response = await axiosInstance.get(`${baseUrl}/products/adviser/${userId}`);
+    return response.data.data;
+  };
+
+  export const updateAdvisorProducts = async (data: any) => {
+    const response = await axiosInstance.post(`${baseUrl}/adviser-products`, data);
     return response.data.data;
   };

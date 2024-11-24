@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MainWrapper from "@/layouts/wrappers/main-wrapper";
-import { useApproveAdvisor, useUpdateAdvisorReview } from "@/services/mutations";
+import { useApproveAdvisor, useUpdateAdvisorProducts, useUpdateAdvisorReview } from "@/services/mutations";
 import { useAdviserReview, useAdvisorById, useGetApplicantFiles, useGetFileContent } from "@/services/queries";
 import { Check, DownloadIcon, EyeIcon, FileIcon, Loader2 } from "lucide-react";
 import { useState } from 'react';
@@ -19,8 +19,10 @@ export function ManageIntermediary() {
   const { data: advisor, isLoading } = useAdvisorById(intermediaryId! as string);
   const { mutate: approveAdvisor, isPending: isApprovePending } = useApproveAdvisor();
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
+  const [isUpdateAdvisorProductsDialogOpen, setIsUpdateAdvisorProductsDialogOpen] = useState(false);
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const { mutate: updateAdvisorReviewFn, isPending: isReviewPending } = useUpdateAdvisorReview();
+  const { mutate: updateAdvisorProductsFn, isPending: isUpdatePending } = useUpdateAdvisorProducts();
   const { data: adviserReview } = useAdviserReview(intermediaryId as string);
 
 
@@ -46,7 +48,6 @@ export function ManageIntermediary() {
   };
 
   const handleApprove = (selectedProducts: number[]) => {
-    console.log('Selected products:', selectedProducts);
     approveAdvisor({ 
       review_id: adviserReview?.id,
       user_id: advisor?.user_id, 
@@ -55,6 +56,14 @@ export function ManageIntermediary() {
       product_ids: selectedProducts 
     });
     setIsApproveDialogOpen(false);
+  };
+
+  const handleUpdate = (selectedProducts: number[]) => {
+    updateAdvisorProductsFn({ 
+      adviser_id: advisor?.user_id,
+      product_ids: selectedProducts 
+    });
+    setIsUpdateAdvisorProductsDialogOpen(false);
   };
 
   if (isLoading) {
@@ -81,24 +90,37 @@ export function ManageIntermediary() {
           {advisor.intermediary_type === 'Applicant' && (
             <>
               <div className="space-x-2">
-                {/* {advisor.status === AdviserReviewStatus.Pending || advisor.status === AdviserReviewStatus.Action_Required && ( */}
-                <Button 
-                  onClick={() => setIsReviewDialogOpen(true)}
+                {adviserReview.status === AdviserReviewStatus.Approved && (
+                  <Button 
+                    onClick={() => setIsUpdateAdvisorProductsDialogOpen(true)}
+                    variant="outline"
+                    disabled={isUpdatePending}
+                  >
+                    {isUpdatePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-green-600" />}
+                    Update Advisor Products
+                  </Button>
+                )}
+
+                {adviserReview.status !== AdviserReviewStatus.Approved && (
+                  <>
+                    <Button 
+                      onClick={() => setIsReviewDialogOpen(true)}
                   variant="outline"
                   disabled={adviserReview?.current_workflow_stage_id != 1 ||(adviserReview?.current_workflow_stage_id == 1 && adviserReview?.status == AdviserReviewStatus.Approved)}
                 >
                   {isReviewPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-green-600" />}
-                  Review Adviser
+                  Review Advisor
                   </Button>
-                {/* )} */}
                 <Button 
                   onClick={() => setIsApproveDialogOpen(true)}
                   className="bg-green-600 hover:bg-green-700 text-white"
                   disabled={(adviserReview?.current_workflow_stage_id == 1 && adviserReview?.status == AdviserReviewStatus.Approved) || (adviserReview?.current_workflow_stage_id == 2 && adviserReview?.status == AdviserReviewStatus.Approved)}
                 >
                   {isApprovePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-white" />}
-                  Approve Adviser
-                  </Button>
+                  Approve Advisor
+                    </Button>
+                  </>
+                )}
               </div>
               
               <ReviewAdvisorDialog
@@ -121,6 +143,14 @@ export function ManageIntermediary() {
                 advisorName={advisor.names}
                 onApprove={(selectedProducts: number[]) => handleApprove(selectedProducts)}
               />
+
+              <ApproveAdvisorDialog
+                isOpen={isUpdateAdvisorProductsDialogOpen}
+                onOpenChange={setIsUpdateAdvisorProductsDialogOpen}
+                advisorName={advisor.names}
+                onApprove={(selectedProducts: number[]) => handleUpdate(selectedProducts)}
+                dialogText="Update Advisor Products"
+              />
             </>
           )}
         </div>
@@ -130,7 +160,7 @@ export function ManageIntermediary() {
             <TabsTrigger value="personal">Personal Information</TabsTrigger>
             <TabsTrigger value="business">Business Details</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="approval_status">Adviser Approved Products</TabsTrigger>
+            <TabsTrigger value="approval_status">Advisor Approved Products</TabsTrigger>
             <TabsTrigger value="activity">Activity Log</TabsTrigger>
           </TabsList>
           <TabsContent value="personal" className="mt-4">

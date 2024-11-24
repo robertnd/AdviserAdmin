@@ -9,6 +9,7 @@ interface ApproveAdvisorDialogProps {
   onOpenChange: (open: boolean) => void;
   advisorName: string;
   onApprove: (selectedProducts: number[]) => void;
+  dialogText?: string;
 }
 
 export function ApproveAdvisorDialog({
@@ -16,6 +17,7 @@ export function ApproveAdvisorDialog({
   onOpenChange,
   advisorName,
   onApprove,
+  dialogText="Approve Advisor",
 }: ApproveAdvisorDialogProps) {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const { data: productCategories } = useAdminProductCategories(advisorName);
@@ -41,7 +43,7 @@ export function ApproveAdvisorDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl">Approve Advisor</DialogTitle>
+          <DialogTitle className="text-xl">{dialogText}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
