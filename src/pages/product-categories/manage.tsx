@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import AddPermissionDialog from "@/components/dialogs/add-permission-dialog";
 import { useAssignProductCategoryApprovalPermission } from "@/services/mutations";
+import { ProductCategorySettings } from "@/components/tabs/product-category-settings";
 
 // interface Product {
 //   id: string;
@@ -200,37 +201,7 @@ export function ManageProductCategory() {
           </TabsContent>
 
           <TabsContent value="settings" className="mt-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Category Name</label>
-                    <Input value={category.name} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Description</label>
-                    <Input value={category.description} />
-                  </div>
-                  {/* <div className="space-y-2">
-                    <label className="text-sm font-medium">Status</label>
-                    <Select value={category.status}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="Pending">Pending</SelectItem>
-                        <SelectItem value="Inactive">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div> */}
-                </div>
-                <div className="flex justify-end space-x-2 mt-4">
-                  <Button variant="outline">Cancel</Button>
-                  <Button>Save Changes</Button>
-                </div>
-              </CardContent>
-            </Card>
+            <ProductCategorySettings category={category} />
           </TabsContent>
         </Tabs>
       </div>

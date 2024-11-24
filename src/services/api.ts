@@ -109,6 +109,16 @@ export const createAdmin = async ({email, password}: any) => {
     return response.data.data;
   };
 
+  export const updateProductCategory = async (data: any) => {
+    const response = await axiosInstance.put(`${baseUrl}/product-categories/${data.id}`, data);
+    return response.data.data;
+  };
+
+  export const deleteProductCategory = async (id: number) => {
+    const response = await axiosInstance.delete(`${baseUrl}/product-categories/${id}`);
+    return response.data.data;
+  };
+
   export const createProduct = async (productData: any) => {
     productData.product_category_id = parseInt(productData.product_category_id);
     const response = await axiosInstance.post(`${baseUrl}/products`, productData);

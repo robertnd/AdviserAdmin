@@ -78,7 +78,7 @@ export function ProductCategories() {
                   <TableCell 
                     className={`py-5 px-5 truncate ${index % 2 === 0 ? 'bg-white' : ''}`}
                   >
-                    {category.productsCount}
+                    {category.total_products}
                   </TableCell>
                   <TableCell className={`py-5 px-5 ${index % 2 === 0 ? 'bg-white' : ''}`}>
                     <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>

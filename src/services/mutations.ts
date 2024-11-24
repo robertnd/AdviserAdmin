@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { errorToast, successToast } from "@/lib/utils";
-import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword, createProductCategory, createProduct, updateAdvisorReview, assignProductCategoryApprovalPermission, approveAdvisor } from "./api";
+import { createAdmin, updateAdvisorStatus, getEventById, inviteAdmin, setPassword, createProductCategory, createProduct, updateAdvisorReview, assignProductCategoryApprovalPermission, approveAdvisor, updateProductCategory, deleteProductCategory } from "./api";
 
 
 export const useCreateAdmin = () => {
@@ -116,6 +116,46 @@ export const useCreateAdmin = () => {
         errorToast(error.message);
       },
       onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
+      }
+    });
+  };
+
+  export const useUpdateProductCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["updateProductCategory"],
+      mutationFn: (data: any) => updateProductCategory(data),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        successToast("Product category updated successfully");
+        await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
+      }
+    });
+  };
+
+  export const useDeleteProductCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationKey: ["deleteProductCategory"],
+      mutationFn: (id: number) => deleteProductCategory(id),
+      onSettled: async (_, error) => {
+        if (error) {
+          errorToast(error.message);
+        }
+      },
+      onError: (error) => {
+        errorToast(error.message);
+      },
+      onSuccess: async () => {
+        successToast("Product category deleted successfully");
         await queryClient.invalidateQueries({ queryKey: ["all-product-categories"] });
       }
     });
