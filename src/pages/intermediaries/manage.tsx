@@ -90,18 +90,7 @@ export function ManageIntermediary() {
           {advisor.intermediary_type === 'Applicant' && (
             <>
               <div className="space-x-2">
-                {adviserReview.status === AdviserReviewStatus.Approved && (
-                  <Button 
-                    onClick={() => setIsUpdateAdvisorProductsDialogOpen(true)}
-                    variant="outline"
-                    disabled={isUpdatePending}
-                  >
-                    {isUpdatePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-green-600" />}
-                    Update Advisor Products
-                  </Button>
-                )}
-
-                {adviserReview.status !== AdviserReviewStatus.Approved && (
+                {adviserReview?.status !== AdviserReviewStatus.Approved && (
                   <>
                     <Button 
                       onClick={() => setIsReviewDialogOpen(true)}
@@ -120,6 +109,17 @@ export function ManageIntermediary() {
                   Approve Advisor
                     </Button>
                   </>
+                )}
+
+                {adviserReview?.status === AdviserReviewStatus.Approved && (
+                  <Button 
+                    onClick={() => setIsUpdateAdvisorProductsDialogOpen(true)}
+                    variant="outline"
+                    disabled={isUpdatePending}
+                  >
+                    {isUpdatePending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2 text-green-600" />}
+                    Update Advisor Products
+                  </Button>
                 )}
               </div>
               

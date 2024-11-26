@@ -128,12 +128,12 @@ export const useAllAdmins = (): UseQueryResult<any[], Error> => {
     });
   };
 
-  export const useAdminProductCategories = (userId: string): UseQueryResult<any[], Error> => {
+  export const useAdminProductCategories = (): UseQueryResult<any[], Error> => {
     return useQuery({
-      queryKey: ["admin-product-categories", userId],
+      queryKey: ["admin-product-categories"],
       queryFn: () => fetchAdminProductCategories(),
       refetchOnWindowFocus: false,
-      enabled: !!userId,
+      enabled: true,
     });
   };
 

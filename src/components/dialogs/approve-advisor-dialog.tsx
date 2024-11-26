@@ -15,12 +15,11 @@ interface ApproveAdvisorDialogProps {
 export function ApproveAdvisorDialog({
   isOpen,
   onOpenChange,
-  advisorName,
   onApprove,
   dialogText="Approve Advisor",
 }: ApproveAdvisorDialogProps) {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
-  const { data: productCategories } = useAdminProductCategories(advisorName);
+  const { data: productCategories } = useAdminProductCategories();
 
   // Get all products from categories
   const allProducts = productCategories?.flatMap(category => 
